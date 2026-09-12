@@ -108,7 +108,8 @@ mark{background:#FDE68A;color:inherit;border-radius:2px;padding:0 1px}
 .e-edit{margin-top:10px;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--paper2)}
 .ee-field{margin-bottom:10px}
 .ee-field label{display:block;font-size:12px;color:var(--ink2);margin-bottom:4px}
-.ee-field input,.ee-field textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;font-family:var(--sans);background:#fff;color:var(--ink)}
+.ee-field input,.ee-field textarea,.ee-field select{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;font-family:var(--sans);background:#fff;color:var(--ink)}
+.ee-field select{cursor:pointer;height:40px}
 .ee-field textarea{min-height:160px;line-height:1.7;resize:vertical}
 .e-edit-actions{display:flex;gap:8px;justify-content:flex-end}
 .e-edit-actions .save{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -236,8 +237,18 @@ const ORDER = ["sentence", "words", "grammar", "method", "speaking", "culture", 
 const SPAN = "2024-07-31 ~ 2026-09-07";
 const TOTAL = 1226;
 /* ===== 渲染逻辑 ===== */
-const CATMAP = {};
+let CATMAP = {};
 CATS.forEach(c=>CATMAP[c.id]=c);
+async function loadCategories(){
+  try{
+    const {data, error} = await sb.from('categories').select('id,name,color,sort').order('sort');
+    if(!error && data && data.length){
+      const m = {};
+      data.forEach(c=>{ m[c.id] = {name: c.name, color: c.color}; });
+      CATMAP = m;
+    }
+  }catch(e){ /* 云端分类加载失败时回退内置分类 */ }
+}
 
 /* ===== 云端（Supabase）接入：数据、登录、实时同步 ===== */
 const SUPABASE_URL = 'https://cecjcbvxgojpuynirtbq.supabase.co';
@@ -383,11 +394,13 @@ function enterEdit(id, el){
   if(!qEl || !bodyEl || !actEl || actEl.dataset.editing) return;
   actEl.dataset.editing = '1';
   pendingImgs = (it.images || []).map(u=>({url: u, isNew: false}));
+  const catOpts = Object.keys(CATMAP).map(cid=>'<option value="'+esc(cid)+'"'+(it.cat===cid?' selected':'')+'>'+esc(CATMAP[cid].name)+'</option>').join('');
   const box = document.createElement('div');
   box.className = 'e-edit';
   box.innerHTML =
     '<div class="ee-field"><label for="edq-'+id+'">提问</label><input id="edq-'+id+'" type="text" value="'+esc(it.q)+'"></div>'
     + '<div class="ee-field"><label for="edb-'+id+'">答案（Markdown 原文，支持 **加粗**、### 小标题、- 列表）</label><textarea id="edb-'+id+'">'+esc(it.body)+'</textarea></div>'
+    + '<div class="ee-field"><label for="edc-'+id+'">分类</label><select id="edc-'+id+'">'+catOpts+'</select></div>'
     + '<div class="ee-field"><label>图片（可选，jpg/png/webp/gif，单张 ≤5MB）</label>'
     + '<div class="ee-imgs" id="eeImgs-'+id+'"></div>'
     + '<div class="ee-upload-row"><input type="file" id="eeFile-'+id+'" class="ee-file" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden>'
@@ -415,6 +428,7 @@ async function doSave(id){
   if(!box) return;
   const q = box.querySelector('input').value.trim();
   const body = box.querySelector('textarea').value;
+  const cat = box.querySelector('select').value;
   if(!q){ alert('提问不能为空'); box.querySelector('input').focus(); return; }
   if(!body.trim()){ alert('答案不能为空'); box.querySelector('textarea').focus(); return; }
   const newUrls = pendingImgs.map(x=>x.url);
@@ -423,9 +437,9 @@ async function doSave(id){
     const p = imgPathFromUrl(u);
     if(p) await sb.storage.from('note-images').remove([p]);
   }
-  const {error} = await sb.from('notes').update({q: q, body: body, images: newUrls}).eq('id', DATA[id].__dbid);
+  const {error} = await sb.from('notes').update({q: q, body: body, cat: cat, images: newUrls}).eq('id', DATA[id].__dbid);
   if(error){ alert('保存失败：' + error.message); return; }
-  DATA[id].q = q; DATA[id].body = body; DATA[id].images = newUrls;
+  DATA[id].q = q; DATA[id].body = body; DATA[id].cat = cat; DATA[id].images = newUrls;
   pendingImgs = [];
   const it = getById(id);
   const wrap = document.createElement('div');
@@ -494,6 +508,7 @@ function exportData(){
 
 /* ===== 云端数据加载与实时同步 ===== */
 async function loadNotes(){
+  await loadCategories();
   const box = document.getElementById('loading');
   if(box) box.style.display = 'block';
   const all = [];
@@ -525,6 +540,9 @@ function scheduleReload(){
 }
 const ch = sb.channel('notes-changes')
   .on('postgres_changes', {event: '*', schema: 'public', table: 'notes'}, scheduleReload)
+  .subscribe();
+const chCat = sb.channel('cat-changes')
+  .on('postgres_changes', {event: '*', schema: 'public', table: 'categories'}, ()=>{ loadCategories().then(renderAll); })
   .subscribe();
 
 /* ===== 管理员登录（RLS 兜底：仅 ADMIN_EMAIL 可写） ===== */
