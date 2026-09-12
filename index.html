@@ -136,6 +136,19 @@ body.is-admin .e-actions .e-btn{display:inline-flex}
 .m-actions button:hover{border-color:var(--accent);color:var(--accent)}
 .m-actions #mLogin{background:var(--accent);border-color:var(--accent);color:#fff}
 .m-actions #mLogin:hover{opacity:.88;color:#fff}
+/* ===== 图片：展示 / 上传 / 放大 ===== */
+.e-images{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.e-images img{width:128px;height:128px;object-fit:cover;border-radius:8px;border:1px solid var(--line);cursor:zoom-in;background:#fff}
+.ee-imgs{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.ee-img{position:relative;width:96px;height:96px}
+.ee-img img{width:100%;height:100%;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:#fff}
+.ee-img-del{position:absolute;top:-7px;right:-7px;width:22px;height:22px;border-radius:50%;border:1px solid var(--line);background:#fff;color:#DC2626;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.ee-img-del:hover{background:#FEE2E2}
+.ee-upload-row{margin-top:2px}
+.ee-upload-row .ee-upload{cursor:pointer;border:1px dashed var(--accent);background:#fff;color:var(--accent);border-radius:8px;padding:6px 14px;font-size:12.5px;font-family:var(--sans)}
+.ee-upload-row .ee-upload:hover{background:#EFF4FF}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:90;display:flex;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+.lightbox img{max-width:92%;max-height:92%;border-radius:8px;box-shadow:0 12px 40px rgba(0,0,0,.5)}
 /* 移动端 */
 
 .menu-btn{display:none}
@@ -301,6 +314,11 @@ function entryHTML(it, ec, id){
   for(const f of (it.fups||[])){
     h += '<div class="fu"><div class="fu-q">'+esc(f.q)+'</div><div class="e-a">'+mdRender(f.a)+'</div></div>';
   }
+  if(it.images && it.images.length){
+    h += '<div class="e-images">';
+    it.images.forEach(u=>{ h += '<img src="'+esc(u)+'" loading="lazy" alt="笔记配图" data-big="'+esc(u)+'">'; });
+    h += '</div>';
+  }
   h += '<div class="e-actions">'
     + '<button type="button" class="e-btn edit" data-act="edit" data-id="'+id+'" title="修改这条笔记"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>修改</button>'
     + '<button type="button" class="e-btn del" data-act="del" data-id="'+id+'" title="删除这条笔记"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>删除</button>'
@@ -309,6 +327,53 @@ function entryHTML(it, ec, id){
 }
 
 /* ===== 修改 ===== */
+/* ===== 修改（含图片上传） ===== */
+let pendingImgs = [];
+function imgPathFromUrl(u){
+  const i = u.indexOf('/object/public/note-images/');
+  if(i < 0) return null;
+  try{ return decodeURIComponent(u.slice(i + '/object/public/note-images/'.length)); }catch(e){ return null; }
+}
+function renderImgList(id, listEl){
+  listEl.innerHTML = '';
+  pendingImgs.forEach((img, idx)=>{
+    const w = document.createElement('div');
+    w.className = 'ee-img';
+    w.innerHTML = '<img src="'+esc(img.url)+'" alt="图片预览">';
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'ee-img-del';
+    del.title = '移除这张图';
+    del.setAttribute('aria-label', '移除');
+    del.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+    del.addEventListener('click', ()=>{
+      if(img.isNew){
+        const p = imgPathFromUrl(img.url);
+        if(p) sb.storage.from('note-images').remove([p]);
+      }
+      pendingImgs.splice(idx, 1);
+      renderImgList(id, listEl);
+    });
+    w.appendChild(del);
+    listEl.appendChild(w);
+  });
+}
+async function handleUpload(id, input, listEl){
+  const files = Array.from(input.files || []);
+  input.value = '';
+  if(!authUser) return;
+  for(const f of files){
+    if(f.size > 5*1024*1024){ alert('「'+f.name+'」超过 5MB，已跳过'); continue; }
+    if(!/^image\/(jpeg|png|webp|gif)$/.test(f.type)){ alert('「'+f.name+'」不是 jpg/png/webp/gif，已跳过'); continue; }
+    const safe = f.name.replace(/[^\w.\-]/g, '_').slice(-60);
+    const path = authUser.id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '-' + safe;
+    const {error} = await sb.storage.from('note-images').upload(path, f, {contentType: f.type});
+    if(error){ alert('上传失败：' + error.message); continue; }
+    const {data} = sb.storage.from('note-images').getPublicUrl(path);
+    pendingImgs.push({url: data.publicUrl, isNew: true});
+    renderImgList(id, listEl);
+  }
+}
 function enterEdit(id, el){
   const it = getById(id);
   if(!it) return;
@@ -317,11 +382,16 @@ function enterEdit(id, el){
   const actEl = el.querySelector('.e-actions');
   if(!qEl || !bodyEl || !actEl || actEl.dataset.editing) return;
   actEl.dataset.editing = '1';
+  pendingImgs = (it.images || []).map(u=>({url: u, isNew: false}));
   const box = document.createElement('div');
   box.className = 'e-edit';
   box.innerHTML =
     '<div class="ee-field"><label for="edq-'+id+'">提问</label><input id="edq-'+id+'" type="text" value="'+esc(it.q)+'"></div>'
     + '<div class="ee-field"><label for="edb-'+id+'">答案（Markdown 原文，支持 **加粗**、### 小标题、- 列表）</label><textarea id="edb-'+id+'">'+esc(it.body)+'</textarea></div>'
+    + '<div class="ee-field"><label>图片（可选，jpg/png/webp/gif，单张 ≤5MB）</label>'
+    + '<div class="ee-imgs" id="eeImgs-'+id+'"></div>'
+    + '<div class="ee-upload-row"><input type="file" id="eeFile-'+id+'" class="ee-file" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden>'
+    + '<button type="button" class="e-btn ee-upload">上传图片</button></div></div>'
     + '<div class="e-edit-actions">'
     + '<button type="button" class="e-btn cancel" data-cancel="'+id+'">取消</button>'
     + '<button type="button" class="e-btn save" data-save="'+id+'">保存修改</button>'
@@ -330,6 +400,11 @@ function enterEdit(id, el){
   bodyEl.style.display = 'none';
   actEl.style.display = 'none';
   bodyEl.parentNode.insertBefore(box, bodyEl.nextSibling);
+  const listEl = box.querySelector('.ee-imgs');
+  renderImgList(id, listEl);
+  const fileInput = box.querySelector('.ee-file');
+  box.querySelector('.ee-upload').addEventListener('click', ()=>{ if(isAdmin()) fileInput.click(); else alert('请先登录管理员账号'); });
+  fileInput.addEventListener('change', ()=> handleUpload(id, fileInput, listEl));
   box.querySelector('input').focus();
 }
 async function doSave(id){
@@ -342,9 +417,16 @@ async function doSave(id){
   const body = box.querySelector('textarea').value;
   if(!q){ alert('提问不能为空'); box.querySelector('input').focus(); return; }
   if(!body.trim()){ alert('答案不能为空'); box.querySelector('textarea').focus(); return; }
-  const {error} = await sb.from('notes').update({q: q, body: body}).eq('id', DATA[id].__dbid);
+  const newUrls = pendingImgs.map(x=>x.url);
+  const removed = (DATA[id].images || []).filter(u => newUrls.indexOf(u) < 0);
+  for(const u of removed){
+    const p = imgPathFromUrl(u);
+    if(p) await sb.storage.from('note-images').remove([p]);
+  }
+  const {error} = await sb.from('notes').update({q: q, body: body, images: newUrls}).eq('id', DATA[id].__dbid);
   if(error){ alert('保存失败：' + error.message); return; }
-  DATA[id].q = q; DATA[id].body = body;
+  DATA[id].q = q; DATA[id].body = body; DATA[id].images = newUrls;
+  pendingImgs = [];
   const it = getById(id);
   const wrap = document.createElement('div');
   wrap.innerHTML = entryHTML(it, CATMAP[it.cat].color, id).trim();
@@ -360,6 +442,15 @@ function cancelEdit(id){
   if(!el) return;
   const box = el.querySelector('.e-edit');
   if(box) box.remove();
+  if(pendingImgs.length){
+    pendingImgs.forEach(img=>{
+      if(img.isNew){
+        const p = imgPathFromUrl(img.url);
+        if(p) sb.storage.from('note-images').remove([p]);
+      }
+    });
+    pendingImgs = [];
+  }
   const qEl = el.querySelector('.e-q'), bodyEl = el.querySelector('.e-a'), actEl = el.querySelector('.e-actions');
   if(qEl) qEl.style.display = '';
   if(bodyEl) bodyEl.style.display = '';
@@ -418,7 +509,7 @@ async function loadNotes(){
   }
   DATA.length = 0;
   all.forEach(r=>{
-    const o = {date: r.date||'', q: r.q, body: r.body, cat: r.cat, fups: r.fups||[], dup: r.dup||[]};
+    const o = {date: r.date||'', q: r.q, body: r.body, cat: r.cat, fups: r.fups||[], dup: r.dup||[], images: r.images||[]};
     o.__dbid = r.id;
     o.__deleted = !!r.deleted;
     DATA.push(o);
@@ -620,6 +711,15 @@ function onMainClick(e){
   if(cancel){ cancelEdit(parseInt(cancel.dataset.cancel, 10)); return; }
   const more = e.target.closest('.btn-more');
   if(more){ toggleMore(more); return; }
+  const big = e.target.closest('.e-images img');
+  if(big){
+    const lb = document.createElement('div');
+    lb.className = 'lightbox';
+    lb.innerHTML = '<img src="'+esc(big.dataset.big)+'" alt="放大预览">';
+    lb.addEventListener('click', ()=> lb.remove());
+    document.body.appendChild(lb);
+    return;
+  }
   const btn = e.target.closest('[data-act]');
   if(!btn) return;
   const id = parseInt(btn.dataset.id, 10);
