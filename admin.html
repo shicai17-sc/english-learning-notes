@@ -657,7 +657,7 @@ async function edgeCall(action, body){
   const token = await getAuthToken();
   if(!token){ toast('请先登录'); return null; }
   const url = EDGE_USERS + '?action=' + action;
-  const opts = { headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' } };
+  const opts = { headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' } };
   if(body) opts.method = 'POST', opts.body = JSON.stringify(body);
   const resp = await fetch(url, opts);
   const data = await resp.json();
