@@ -245,6 +245,10 @@ let authUser = null;
 
 let currentTopic = 'english';
 let currentQuery = '';
+const INITIAL_VISIBLE = 60;
+const LOAD_BATCH = 50;
+let visibleCount = INITIAL_VISIBLE;
+let searchResults = null;
 let CATMAP = {};          // cat id -> {name,color,topic,sort,description}
 let CATS_BY_TOPIC = {english: FALLBACK_CATS.slice()};  // topic -> [cat]
 let notesByTopic = {};    // topic -> [有效笔记]
@@ -616,13 +620,22 @@ function buildSidebar(){
 }
 function buildMain(){
   const cats = CATS_BY_TOPIC[currentTopic] || [];
+  const list = searchResults || (notesByTopic[currentTopic] || []);
+  const byCatF = {};
+  list.forEach(it=>{ (byCatF[it.cat]=byCatF[it.cat]||[]).push(it); });
   let h = '';
+  let rendered = 0;
   cats.forEach((c, i)=>{
-    const items = byCat[c.id]||[];
+    const items = byCatF[c.id]||[];
     h += '<section class="cat" id="cat-'+c.id+'"><div class="cat-head"><span class="cat-no">'+String(i+1).padStart(2,'0')+'</span><h2>'+esc(c.name)+'</h2><span class="cn">'+esc(c.description||'')+'</span><span class="cat-count">'+items.length+' 条</span></div>';
-    items.forEach(it=>{ h += entryHTML(it, c.color, it.__id); });
+    items.forEach(it=>{
+      if(rendered < visibleCount){ h += entryHTML(it, c.color, it.__id); rendered++; }
+    });
     h += '</section>';
   });
+  if(rendered < list.length){
+    h += '<div id="loadMoreTip" style="text-align:center;padding:28px 16px;color:var(--muted);font-size:14px;">已显示 '+rendered+' / '+list.length+' 条 · 向下滚动加载更多</div>';
+  }
   document.getElementById('main').innerHTML = h;
 }
 function refreshStats(){
@@ -648,6 +661,8 @@ function renderAll(){
   renderTopicBar();
   updateTopicUI();
   buildSidebar();
+  visibleCount = INITIAL_VISIBLE;
+  searchResults = null;
   buildMain();
   refreshStats();
   collectEntries();
@@ -671,23 +686,26 @@ function collectEntries(){
     el.__it = {cat: el.dataset.cat, q: el.querySelector('.e-q').textContent, body: el.querySelector('.e-a').textContent, fups: []};
   });
 }
+function highlightAll(q){
+  if(!q) return;
+  document.querySelectorAll('#main .entry').forEach(el=> highlight(el, q));
+}
 function applyFilter(q){
   q = (q||'').trim().toLowerCase();
-  let shown = 0;
-  allEntries.forEach(el=>{
-    const it = el.__it;
-    let ok = true;
-    if(q){
-      const hay = (it.q+' '+it.body).toLowerCase();
-      ok = hay.indexOf(q) >= 0;
-    }
-    el.classList.toggle('hide', !ok);
-    if(ok) shown++;
-    el.querySelectorAll('mark').forEach(m=>{ const p=m.parentNode; p.replaceChild(document.createTextNode(m.textContent), m); p.normalize(); });
-    if(ok && q) highlight(el, q);
-  });
-  document.getElementById('searchStat').textContent = q ? ('匹配 ' + shown + ' 条') : ('共 ' + allEntries.length + ' 条');
-  document.getElementById('empty').classList.toggle('show', shown===0 && allEntries.length>0);
+  currentQuery = q;
+  if(q){
+    const all = notesByTopic[currentTopic] || [];
+    searchResults = all.filter(it=> (it.q+' '+it.body).toLowerCase().indexOf(q) >= 0);
+  } else {
+    searchResults = null;
+  }
+  visibleCount = INITIAL_VISIBLE;
+  buildMain();
+  collectEntries();
+  const total = searchResults ? searchResults.length : (notesByTopic[currentTopic]||[]).length;
+  document.getElementById('searchStat').textContent = q ? ('匹配 ' + total + ' 条') : ('共 ' + total + ' 条');
+  document.getElementById('empty').classList.toggle('show', total===0 && !!q);
+  highlightAll(q);
 }
 function highlight(el, q){
   const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {acceptNode(n){ return n.parentNode.tagName==='MARK' ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; }});
@@ -765,7 +783,24 @@ window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('authModal').addEventListener('click', e=>{ if(e.target.id === 'authModal') closeAuthModal(); });
   const totop = document.getElementById('totop');
   totop.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}));
-  window.addEventListener('scroll', ()=> totop.classList.toggle('show', window.scrollY > 800));
+  let _scrollTimer = null;
+  window.addEventListener('scroll', ()=>{
+    totop.classList.toggle('show', window.scrollY > 800);
+    if(_scrollTimer) return;
+    _scrollTimer = setTimeout(()=>{
+      _scrollTimer = null;
+      const list = searchResults || (notesByTopic[currentTopic]||[]);
+      if(visibleCount >= list.length) return;
+      if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 700){
+        const sy = window.scrollY;
+        visibleCount += LOAD_BATCH;
+        buildMain();
+        collectEntries();
+        highlightAll(currentQuery);
+        window.scrollTo(0, sy);
+      }
+    }, 120);
+  });
   updateAuthUI();
   loadNotes();
 });
