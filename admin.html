@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>管理后台 · 英语学习手册</title>
+<title>管理后台 · 多主题知识库</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -32,7 +32,6 @@ body{margin:0;background:var(--bg);font-family:-apple-system,'PingFang SC','Micr
 .tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .panel{display:none}
 .panel.on{display:block}
-/* 登录区 */
 #loginBox{max-width:400px;margin:60px auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:28px}
 #loginBox h2{margin:0 0 6px;font-size:18px}
 #loginBox p{color:var(--ink2);font-size:13px;margin:0 0 18px}
@@ -42,20 +41,20 @@ body{margin:0;background:var(--bg);font-family:-apple-system,'PingFang SC','Micr
 .f textarea{min-height:120px;line-height:1.7;resize:vertical}
 .f input[type=color]{height:38px;padding:2px;width:60px}
 .msg{font-size:12.5px;color:var(--danger);min-height:18px;margin-top:8px}
-/* 工具栏 */
 .toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
 .toolbar input[type=text]{border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:13.5px;width:220px;max-width:100%;font-family:inherit}
 .toolbar select{border:1px solid var(--line);border-radius:8px;padding:8px;font-size:13.5px;font-family:inherit;background:#fff}
 .toolbar .chk{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--ink2);cursor:pointer}
+.toolbar .lbl{font-size:12.5px;color:var(--ink2)}
 .batch{display:flex;gap:8px;align-items:center;margin-bottom:10px;min-height:30px}
 .batch .cnt{font-size:12.5px;color:var(--ink2)}
-/* 笔记列表 */
 .note{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start}
 .note.hidden{opacity:.55;background:#fafafa}
 .note .ck{margin-top:4px}
 .note .body{flex:1;min-width:0}
 .note .top{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:4px}
 .tag{font-size:11.5px;color:#fff;border-radius:20px;padding:1px 9px;white-space:nowrap}
+.tag.tp{background:#334155}
 .tag.hidden{background:#9ca3af}
 .note .q{font-weight:600;font-size:14px;margin:0 0 2px;word-break:break-word}
 .note .meta{font-size:12px;color:var(--ink2)}
@@ -66,26 +65,23 @@ body{margin:0;background:var(--bg);font-family:-apple-system,'PingFang SC','Micr
 .formrow label{font-size:12px;color:var(--ink2);line-height:36px}
 .formrow .err{grid-column:2;color:var(--danger);font-size:12px}
 .formrow .fbtn{grid-column:2;display:flex;gap:8px;margin-top:6px}
-/* 图片上传 */
 .imgs{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
 .img{position:relative;width:80px;height:80px}
 .img img{width:100%;height:100%;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:#fff}
 .img .del{position:absolute;top:-7px;right:-7px;width:20px;height:20px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--danger);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
-/* 分类管理 */
 .catrow{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .catrow .f{flex:1;min-width:160px;margin:0}
 .catrow .f label{font-size:11.5px}
 .catrow .cnt{font-size:12.5px;color:var(--ink2);white-space:nowrap}
 .catrow .ops{display:flex;gap:6px}
-/* 统计 */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
 .stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px}
 .stat .v{font-size:26px;font-weight:700;margin:2px 0 0}
 .stat .l{font-size:12.5px;color:var(--ink2)}
-.bars{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px}
+.bars{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px}
 .bars h3{margin:0 0 12px;font-size:14px}
 .bar{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.bar .name{font-size:12.5px;width:110px;flex:0 0 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .name{font-size:12.5px;width:120px;flex:0 0 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bar .track{flex:1;background:#f1f3f7;border-radius:6px;height:16px;overflow:hidden}
 .bar .fill{height:100%;border-radius:6px;min-width:2px}
 .bar .n{font-size:12px;color:var(--ink2);width:56px;flex:0 0 auto;text-align:right}
@@ -121,9 +117,9 @@ body{margin:0;background:var(--bg);font-family:-apple-system,'PingFang SC','Micr
   <section class="panel on" id="p-notes">
     <div class="toolbar">
       <input type="text" id="q" placeholder="搜索提问 / 答案…">
-      <select id="catFilter">
-        <option value="">全部分类</option>
-      </select>
+      <span class="lbl">主题</span>
+      <select id="topicFilter"><option value="">全部主题</option></select>
+      <select id="catFilter"><option value="">全部分类</option></select>
       <label class="chk"><input type="checkbox" id="showHidden"> 显示已隐藏</label>
       <button class="btn pri sm" id="addBtn">＋ 新增笔记</button>
     </div>
@@ -139,8 +135,10 @@ body{margin:0;background:var(--bg);font-family:-apple-system,'PingFang SC','Micr
   <!-- 分类管理 -->
   <section class="panel" id="p-cats">
     <div class="toolbar">
+      <span class="lbl">当前主题</span>
+      <select id="catTopicFilter"></select>
       <button class="btn pri sm" id="addCatBtn">＋ 新增分类</button>
-      <span class="cnt" id="catHint" style="font-size:12.5px;color:var(--ink2)">改名 / 改色后点「保存」，前台立即生效</span>
+      <span class="cnt" id="catHint" style="font-size:12.5px;color:var(--ink2)">改名 / 改色后点「保存」，前台立即生效（分类按主题隔离）</span>
     </div>
     <div id="catList"></div>
   </section>
@@ -148,9 +146,8 @@ body{margin:0;background:var(--bg);font-family:-apple-system,'PingFang SC','Micr
   <!-- 数据统计 -->
   <section class="panel" id="p-stats">
     <div class="stats" id="statCards"></div>
-    <div class="bars" id="statBars">
-      <h3>分类分布</h3>
-    </div>
+    <div class="bars" id="topicBars"><h3>主题分布</h3></div>
+    <div class="bars" id="statBars"><h3>分类分布（当前主题）</h3></div>
     <div style="margin-top:14px">
       <button class="btn" id="exportBtn">导出全部数据（JSON）</button>
     </div>
@@ -175,32 +172,44 @@ const SUPABASE_URL = 'https://cecjcbvxgojpuynirtbq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNlY2pjYnZ4Z29qcHV5bmlydGJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMzE5OTYsImV4cCI6MjEwNDgwNzk5Nn0.tFmY5dz4iwRr-P2GKfUT5HgEUMtWiMnndO5Jir0JOoE';
 const ADMIN_EMAIL = 'shicai17@gmail.com';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+/* 8 个主题（与前台一致） */
+const TOPICS = [
+  {id:'english', name:'英语学习', logo:'E'},
+  {id:'tech',    name:'电脑数码', logo:'T'},
+  {id:'work',    name:'工作商务', logo:'W'},
+  {id:'car',     name:'车辆汽车', logo:'C'},
+  {id:'health',  name:'健康医疗', logo:'H'},
+  {id:'pet',     name:'养龟宠物', logo:'P'},
+  {id:'life',    name:'生活家居', logo:'L'},
+  {id:'arts',    name:'影视文艺', logo:'A'}
+];
+const TOPICMAP = {}; TOPICS.forEach(t=>TOPICMAP[t.id]=t);
+const topicName = id => (TOPICMAP[id] ? TOPICMAP[id].name : (id||'未分类'));
+
 let authUser = null;
-let CATMAP = {};
-let NOTES = [];      // 全量笔记（含隐藏）
+let CATMAP = {};          // cat id -> {name,color,topic,sort,description}
+let CATS_BY_TOPIC = {};    // topic -> [cat]
+let NOTES = [];            // 全量笔记
 let pendingImgs = [];
 const CATS_DEFAULT = [
-  {id:'sentence',name:'句子翻译',color:'#2563EB'},
-  {id:'words',name:'单词与表达',color:'#0E9F6E'},
-  {id:'grammar',name:'语法',color:'#D97706'},
-  {id:'method',name:'学习方法',color:'#7C3AED'},
-  {id:'speaking',name:'口语场景',color:'#DB2777'},
-  {id:'culture',name:'语言文化',color:'#0891B2'},
-  {id:'exam',name:'考试水平',color:'#4D7C0F'},
-  {id:'other',name:'英语杂谈',color:'#64748B'}
+  {id:'sentence',name:'句子翻译',color:'#2563EB',topic:'english'},
+  {id:'words',name:'单词与表达',color:'#0E9F6E',topic:'english'},
+  {id:'grammar',name:'语法',color:'#D97706',topic:'english'},
+  {id:'method',name:'学习方法',color:'#7C3AED',topic:'english'},
+  {id:'speaking',name:'口语场景',color:'#DB2777',topic:'english'},
+  {id:'culture',name:'语言文化',color:'#0891B2',topic:'english'},
+  {id:'exam',name:'考试水平',color:'#4D7C0F',topic:'english'},
+  {id:'other',name:'英语杂谈',color:'#64748B',topic:'english'}
 ];
 CATS_DEFAULT.forEach(c=>CATMAP[c.id]=c);
+CATS_BY_TOPIC = {english: CATS_DEFAULT.slice()};
 
-function esc(s){
-  return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function $(id){ return document.getElementById(id); }
 function toast(msg){
-  const t = $('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toast._t);
-  toast._t = setTimeout(()=>t.classList.remove('show'), 2200);
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove('show'), 2200);
 }
 function isAdmin(){ return !!(authUser && authUser.email === ADMIN_EMAIL); }
 function imgPathFromUrl(u){
@@ -209,6 +218,8 @@ function imgPathFromUrl(u){
   try{ return decodeURIComponent(u.slice(i + '/object/public/note-images/'.length)); }catch(e){ return null; }
 }
 function fmtDate(d){ return (d||'').slice(0,10); }
+function curTopic(){ return $('topicFilter').value; }          // 空=全部主题
+function curCatTopic(){ return $('catTopicFilter').value; }   // 分类管理当前主题
 
 /* ===== 登录 ===== */
 function setMsg(t){ $('mMsg').textContent = t; }
@@ -220,24 +231,26 @@ async function submitAuth(mode){
   const fn = mode === 'login' ? sb.auth.signInWithPassword : sb.auth.signUp;
   const {data, error} = await fn({email: email, password: pw});
   if(error){ setMsg(error.message); return; }
-  if(mode === 'signup'){
-    setMsg('注册成功，请到邮箱点击确认链接后重新登录');
-    return;
-  }
+  if(mode === 'signup'){ setMsg('注册成功，请到邮箱点击确认链接后重新登录'); return; }
   await boot();
 }
-function logout(){
-  sb.auth.signOut().then(()=>{ location.reload(); });
-}
+function logout(){ sb.auth.signOut().then(()=>{ location.reload(); }); }
 
 /* ===== 数据加载 ===== */
 async function loadCategories(){
   try{
-    const {data, error} = await sb.from('categories').select('id,name,color,sort').order('sort');
+    const {data, error} = await sb.from('categories').select('id,name,color,sort,description,topic').order('sort');
     if(!error && data && data.length){
-      const m = {};
-      data.forEach(c=>{ m[c.id] = {name: c.name, color: c.color}; });
-      CATMAP = m;
+      CATMAP = {}; CATS_BY_TOPIC = {};
+      data.forEach(c=>{
+        const tp = c.topic || 'english';
+        CATMAP[c.id] = {id: c.id, name:c.name, color:c.color, topic:tp, sort:c.sort, description:c.description||''};
+        (CATS_BY_TOPIC[tp] = CATS_BY_TOPIC[tp] || []).push(CATMAP[c.id]);
+      });
+      TOPICS.forEach(t=>{
+        CATS_BY_TOPIC[t.id] = CATS_BY_TOPIC[t.id] || [];
+        CATS_BY_TOPIC[t.id].sort((a,b)=>(a.sort==null?99:a.sort)-(b.sort==null?99:b.sort));
+      });
     }
   }catch(e){}
 }
@@ -245,25 +258,39 @@ async function loadNotes(){
   const all = [];
   const PAGE = 1000;
   for(let from = 0; ; from += PAGE){
-    const {data, error} = await sb.from('notes').select('id,q,body,cat,date,images,deleted').order('id').range(from, from + PAGE - 1);
+    const {data, error} = await sb.from('notes').select('id,q,body,cat,date,images,topic').order('id').range(from, from + PAGE - 1);
     if(error){ toast('加载失败：' + error.message); return; }
     all.push.apply(all, data || []);
     if(!data || data.length < PAGE) break;
   }
   NOTES = all;
+  fillTopicFilters();
   fillCatFilter();
   renderNotes();
   renderCats();
   renderStats();
 }
 
+/* ===== 下拉填充 ===== */
+function fillTopicFilters(){
+  const tf = $('topicFilter');
+  const cur = tf.value;
+  tf.innerHTML = '<option value="">全部主题</option>' + TOPICS.map(t=>'<option value="'+t.id+'">'+t.logo+' '+t.name+'</option>').join('');
+  if([...tf.options].some(o=>o.value===cur)) tf.value = cur;
+  const cf = $('catTopicFilter');
+  const curc = cf.value || 'english';
+  cf.innerHTML = TOPICS.map(t=>'<option value="'+t.id+'"'+(t.id===curc?' selected':'')+'>'+t.logo+' '+t.name+'</option>').join('');
+}
+
 /* ===== 笔记列表 ===== */
 function currentFilter(){
   const q = $('q').value.trim().toLowerCase();
+  const topic = curTopic();
   const cat = $('catFilter').value;
   const showHidden = $('showHidden').checked;
   return NOTES.filter(n=>{
     if(n.deleted && !showHidden) return false;
+    if(topic && (n.topic||'english') !== topic) return false;
     if(cat && n.cat !== cat) return false;
     if(q && (n.q||'').toLowerCase().indexOf(q) < 0 && (n.body||'').toLowerCase().indexOf(q) < 0) return false;
     return true;
@@ -272,8 +299,10 @@ function currentFilter(){
 function fillCatFilter(){
   const sel = $('catFilter');
   const cur = sel.value;
+  const topic = curTopic();
+  const pool = topic ? (CATS_BY_TOPIC[topic]||[]) : Object.keys(CATMAP).map(k=>CATMAP[k]);
   sel.innerHTML = '<option value="">全部分类</option>' +
-    Object.keys(CATMAP).map(id=>'<option value="'+esc(id)+'"'+(id===cur?' selected':'')+'>'+esc(CATMAP[id].name)+'</option>').join('');
+    pool.map(c=>'<option value="'+esc(c.id)+'"'+(c.id===cur?' selected':'')+'>'+esc(c.name)+'</option>').join('');
 }
 function renderNotes(){
   const list = currentFilter();
@@ -283,12 +312,14 @@ function renderNotes(){
   box.innerHTML = list.map(n=>{
     const cat = CATMAP[n.cat] || {name: n.cat||'未分类', color:'#9ca3af'};
     const imgs = (n.images||[]).length;
+    const tp = n.topic||'english';
     return '<div class="note'+(n.deleted?' hidden':'')+'" data-id="'+n.id+'">'
       + '<input type="checkbox" class="ck" data-id="'+n.id+'">'
       + '<div class="body">'
-      + '<div class="top"><span class="tag" style="background:'+esc(cat.color)+'">'+esc(cat.name)+'</span>'
+      + '<div class="top"><span class="tag tp">'+esc(topicName(tp))+'</span>'
+      + '<span class="tag" style="background:'+esc(cat.color)+'">'+esc(cat.name)+'</span>'
       + '<span class="meta">'+fmtDate(n.date)+'</span>'
-      + (imgs ? '<span class="meta">图片 '+imgs+' 张图</span>' : '')
+      + (imgs ? '<span class="meta">图片 '+imgs+' 张</span>' : '')
       + (n.deleted ? '<span class="tag hidden">已隐藏</span>' : '')
       + '</div>'
       + '<div class="q">'+esc(n.q)+'</div>'
@@ -303,7 +334,7 @@ function renderNotes(){
   }).join('');
 }
 
-/* ===== 编辑 / 新增（含图片上传） ===== */
+/* ===== 图片上传 ===== */
 function renderImgList(listEl){
   listEl.innerHTML = '';
   pendingImgs.forEach((img, idx)=>{
@@ -313,10 +344,7 @@ function renderImgList(listEl){
     const del = document.createElement('button');
     del.type = 'button'; del.className = 'del'; del.textContent = '×';
     del.addEventListener('click', ()=>{
-      if(img.isNew){
-        const p = imgPathFromUrl(img.url);
-        if(p) sb.storage.from('note-images').remove([p]);
-      }
+      if(img.isNew){ const p = imgPathFromUrl(img.url); if(p) sb.storage.from('note-images').remove([p]); }
       pendingImgs.splice(idx, 1);
       renderImgList(listEl);
     });
@@ -340,14 +368,24 @@ async function handleUpload(fileInput, listEl){
     renderImgList(listEl);
   }
 }
+
+/* ===== 编辑 / 新增（含主题与分类联动） ===== */
+function catOptionsFor(tp, selected){
+  const pool = (CATS_BY_TOPIC[tp] && CATS_BY_TOPIC[tp].length) ? CATS_BY_TOPIC[tp] : Object.keys(CATMAP).map(k=>CATMAP[k]);
+  return pool.map(c=>'<option value="'+esc(c.id)+'"'+(c.id===selected?' selected':'')+'>'+esc(c.name)+'</option>').join('');
+}
+function topicOptions(selected){
+  return TOPICS.map(t=>'<option value="'+t.id+'"'+(t.id===selected?' selected':'')+'>'+t.logo+' '+t.name+'</option>').join('');
+}
 function editForm(n, isNew){
   pendingImgs = (n.images || []).map(u=>({url: u, isNew: false}));
-  const catOpts = Object.keys(CATMAP).map(id=>'<option value="'+esc(id)+'"'+(n.cat===id?' selected':'')+'>'+esc(CATMAP[id].name)+'</option>').join('');
+  const nTopic = n.topic || 'english';
   const row = document.createElement('div');
   row.className = 'formrow';
   row.innerHTML =
     '<label>提问 *</label><input type="text" id="fQ" value="'+esc(n.q||'')+'">'
-    + '<label>分类</label><select id="fCat">'+catOpts+'</select>'
+    + '<label>主题</label><select id="fTopic">'+topicOptions(nTopic)+'</select>'
+    + '<label>分类</label><select id="fCat">'+catOptionsFor(nTopic, n.cat)+'</select>'
     + '<label>答案 *（支持 **加粗**、### 小标题、- 列表）</label><textarea id="fBody">'+esc(n.body||'')+'</textarea>'
     + '<label>图片（单张 ≤5MB）</label>'
     + '<div><div class="imgs" id="fImgs"></div>'
@@ -360,13 +398,20 @@ function editForm(n, isNew){
   renderImgList(listEl);
   row.querySelector('#fUp').addEventListener('click', ()=> row.querySelector('#fFile').click());
   row.querySelector('#fFile').addEventListener('change', ()=> handleUpload(row.querySelector('#fFile'), listEl));
+  // 主题切换 → 级联刷新分类下拉
+  row.querySelector('#fTopic').addEventListener('change', e=>{
+    const tp = e.target.value;
+    row.querySelector('#fCat').innerHTML = catOptionsFor(tp, '');
+  });
   row.querySelector('#fCancel').addEventListener('click', ()=> row.remove());
   row.querySelector('#fSave').addEventListener('click', async ()=>{
     const q = row.querySelector('#fQ').value.trim();
     const body = row.querySelector('#fBody').value;
+    const topic = row.querySelector('#fTopic').value;
     const cat = row.querySelector('#fCat').value;
     const err = row.querySelector('#fErr');
     if(!q || !body.trim()){ err.textContent = '提问和答案都不能为空'; return; }
+    if(!cat){ err.textContent = '请选择分类'; return; }
     err.textContent = '';
     const newUrls = pendingImgs.map(x=>x.url);
     const removed = ((n.images||[]).filter(u=>newUrls.indexOf(u)<0));
@@ -374,7 +419,7 @@ function editForm(n, isNew){
       const p = imgPathFromUrl(u);
       if(p) await sb.storage.from('note-images').remove([p]);
     }
-    const payload = {q: q, body: body, cat: cat, images: newUrls};
+    const payload = {q: q, body: body, cat: cat, topic: topic, images: newUrls};
     const {error} = isNew
       ? await sb.from('notes').insert(payload)
       : await sb.from('notes').update(payload).eq('id', n.id);
@@ -393,7 +438,9 @@ function openEdit(id){
   $('noteList').prepend(row);
 }
 function openNew(){
-  const row = editForm({q:'', body:'', cat:Object.keys(CATMAP)[0]||'', images:[]}, true);
+  const tp = curTopic() || 'english';
+  const pool = (CATS_BY_TOPIC[tp]&&CATS_BY_TOPIC[tp].length) ? CATS_BY_TOPIC[tp] : [];
+  const row = editForm({q:'', body:'', topic:tp, cat:(pool[0]?pool[0].id:''), images:[]}, true);
   $('noteList').prepend(row);
 }
 
@@ -410,13 +457,14 @@ async function batchSet(deleted){
   await loadNotes();
 }
 
-/* ===== 分类管理 ===== */
+/* ===== 分类管理（按主题隔离） ===== */
 function renderCats(){
   const box = $('catList');
+  const tp = curCatTopic();
   const cnt = {};
-  NOTES.forEach(n=>{ cnt[n.cat] = (cnt[n.cat]||0) + 1; });
-  const ids = Object.keys(CATMAP);
-  if(!ids.length){ box.innerHTML = '<div style="color:var(--ink2);padding:20px">暂无分类</div>'; return; }
+  NOTES.forEach(n=>{ const c = n.topic||'english'; cnt[n.cat] = (cnt[n.cat]||0) + 1; });
+  const ids = (CATS_BY_TOPIC[tp]||[]).map(c=>c.id);
+  if(!ids.length){ box.innerHTML = '<div style="color:var(--ink2);padding:20px">「'+esc(topicName(tp))+'」主题下暂无分类，点上方「＋ 新增分类」创建</div>'; return; }
   box.innerHTML = ids.map(id=>{
     const c = CATMAP[id];
     const n = cnt[id] || 0;
@@ -458,12 +506,14 @@ async function deleteCat(id){
   toast('已删除分类');
 }
 function openNewCat(){
+  const tp = curCatTopic();
   const row = document.createElement('div');
   row.className = 'catrow';
   row.innerHTML =
     '<div class="f" style="max-width:180px"><label>英文标识（小写字母，如 idiom）</label><input type="text" class="nid" placeholder="idiom"></div>'
     + '<div class="f" style="max-width:180px"><label>显示名称</label><input type="text" class="nname" placeholder="习语表达"></div>'
     + '<div class="f" style="max-width:110px"><label>颜色</label><input type="color" class="ncolor" value="#64748B"></div>'
+    + '<span class="cnt">归属主题：'+esc(topicName(tp))+'</span>'
     + '<div class="ops"><button class="btn sm pri" id="nSave">新增</button>'
     + '<button class="btn sm" id="nCancel">取消</button></div>';
   row.querySelector('#nCancel').addEventListener('click', ()=> row.remove());
@@ -475,12 +525,13 @@ function openNewCat(){
     if(errMsg){ toast(errMsg); return; }
     if(!/^[a-z][a-z0-9_]*$/.test(id)){ toast('英文标识只能是小写字母/数字/下划线'); return; }
     if(CATMAP[id]){ toast('该标识已存在'); return; }
-    const {error} = await sb.from('categories').insert({id: id, name: name, color: color, sort: 99});
+    const {error} = await sb.from('categories').insert({id: id, name: name, color: color, sort: 99, topic: tp});
     if(error){ toast('新增失败：' + error.message); return; }
     await loadCategories();
     row.remove();
     renderCats();
     fillCatFilter();
+    renderStats();
     toast('已新增分类（可编辑笔记时选择）');
   });
   $('catList').prepend(row);
@@ -499,11 +550,23 @@ function renderStats(){
     + '<div class="stat"><div class="l">已隐藏</div><div class="v">'+hidden+'</div></div>'
     + '<div class="stat"><div class="l">图片总数</div><div class="v">'+imgCnt+'</div></div>'
     + '<div class="stat"><div class="l">分类数</div><div class="v">'+Object.keys(CATMAP).length+'</div></div>';
+  // 主题分布
+  const tcnt = {};
+  NOTES.forEach(n=>{ const tp = n.topic||'english'; tcnt[tp]=(tcnt[tp]||0)+1; });
+  const tmax = Math.max(1, ...TOPICS.map(t=>tcnt[t.id]||0));
+  $('topicBars').innerHTML = '<h3>主题分布</h3>' + TOPICS.map(t=>{
+    const n = tcnt[t.id]||0;
+    return '<div class="bar"><span class="name">'+t.logo+' '+esc(t.name)+'</span>'
+      + '<div class="track"><div class="fill" style="width:'+(n/tmax*100).toFixed(1)+'%;background:'+(t.id==='english'?'#1E4FD8':'#64748B')+'"></div></div>'
+      + '<span class="n">'+n+'</span></div>';
+  }).join('');
+  // 分类分布（当前分类管理主题）
+  const tp = curCatTopic();
   const cnt = {};
   NOTES.forEach(n=>{ cnt[n.cat] = (cnt[n.cat]||0) + 1; });
-  const ids = Object.keys(CATMAP);
+  const ids = (CATS_BY_TOPIC[tp]||[]).map(c=>c.id);
   const max = Math.max(1, ...ids.map(id=>cnt[id]||0));
-  $('statBars').innerHTML = '<h3>分类分布</h3>' + ids.map(id=>{
+  $('statBars').innerHTML = '<h3>分类分布（'+esc(topicName(tp))+'）</h3>' + ids.map(id=>{
     const c = CATMAP[id], n = cnt[id]||0;
     return '<div class="bar"><span class="name">'+esc(c.name)+'</span>'
       + '<div class="track"><div class="fill" style="width:'+(n/max*100).toFixed(1)+'%;background:'+esc(c.color)+'"></div></div>'
@@ -514,19 +577,19 @@ function renderStats(){
 /* ===== 导出 ===== */
 function exportData(){
   const data = {exported_at: new Date().toISOString(), total: NOTES.length, notes: NOTES};
-  const blob = new Blob([JSON.stringify(data, null, 1)], {type: 'application/json'});
+  const blob = Blob ? new Blob([JSON.stringify(data, null, 1)], {type: 'application/json'}) : null;
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'english-notes-export-' + new Date().toISOString().slice(0,10) + '.json';
+  a.download = 'knowledge-base-export-' + new Date().toISOString().slice(0,10) + '.json';
   a.click();
   URL.revokeObjectURL(a.href);
   toast('已导出 ' + NOTES.length + ' 条');
 }
 
 /* ===== 事件 ===== */
-document.getElementById('mLogin').addEventListener('click', ()=> submitAuth('login'));
-document.getElementById('mReg').addEventListener('click', ()=> submitAuth('signup'));
-document.getElementById('logoutBtn').addEventListener('click', logout);
+$('mLogin').addEventListener('click', ()=> submitAuth('login'));
+$('mReg').addEventListener('click', ()=> submitAuth('signup'));
+$('logoutBtn').addEventListener('click', logout);
 document.querySelectorAll('.tab').forEach(t=>{
   t.addEventListener('click', ()=>{
     document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on', x===t));
@@ -534,8 +597,10 @@ document.querySelectorAll('.tab').forEach(t=>{
   });
 });
 $('q').addEventListener('input', renderNotes);
+$('topicFilter').addEventListener('change', ()=>{ fillCatFilter(); renderNotes(); });
 $('catFilter').addEventListener('change', renderNotes);
 $('showHidden').addEventListener('change', renderNotes);
+$('catTopicFilter').addEventListener('change', ()=>{ renderCats(); renderStats(); });
 $('selAll').addEventListener('change', e=>{
   document.querySelectorAll('#noteList .ck').forEach(c=>{ c.checked = e.target.checked; });
 });

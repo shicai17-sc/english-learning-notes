@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>英语学习手册 · 两年对话精华整理</title>
+<title>多主题知识库 · 学习手册</title>
 <link rel="preconnect" href="https://miaoda.feishu.cn">
 <link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@400;500;700&display=swap">
 <style>
@@ -18,10 +18,11 @@ html{scroll-behavior:smooth}
 body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.75}
 ::selection{background:#FDE68A}
 /* ===== 顶栏 ===== */
-.topbar{position:sticky;top:0;z-index:50;background:rgba(250,247,241,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.topbar-in{max-width:1280px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(250,247,241,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1280px;margin:0 auto;padding:12px 24px 0;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:700;font-size:18px;letter-spacing:.02em}
-.brand .logo{width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px}
+.brand .logo{width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;transition:background .25s}
+.brand b{font-weight:700}
 .searchbox{flex:1;min-width:200px;max-width:420px;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 14px}
 .searchbox svg{flex:none;opacity:.5}
 .searchbox input{border:none;outline:none;background:transparent;width:100%;font-size:14px;font-family:var(--sans)}
@@ -29,12 +30,19 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
 .top-actions button{cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink2);border-radius:999px;padding:6px 14px;font-size:13px;font-family:var(--sans)}
 .top-actions button:hover{border-color:var(--accent);color:var(--accent)}
 .search-stat{font-size:12px;color:var(--ink2);min-width:120px;text-align:right}
+/* ===== 主题 tab 栏 ===== */
+.topicbar{max-width:1280px;margin:0 auto;display:flex;gap:6px;flex-wrap:wrap;padding:10px 24px 12px}
+.topic{cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink2);border-radius:999px;padding:5px 14px;font-size:13px;font-family:var(--sans);transition:all .15s}
+.topic:hover{border-color:var(--accent);color:var(--accent)}
+.topic.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
 /* ===== 布局 ===== */
-.layout{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:264px 1fr;gap:36px;padding:28px 24px 80px}
+.layout{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:264px 1fr;gap:36px;padding:8px 24px 80px}
 /* ===== 侧栏 ===== */
-.sidebar{position:sticky;top:76px;align-self:start;height:calc(100vh - 96px);overflow:auto;padding-right:8px}
+.sidebar{position:sticky;top:140px;align-self:start;height:calc(100vh - 150px);overflow:auto;padding-right:8px}
 .sidebar::-webkit-scrollbar{width:4px}
 .sidebar::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
+.side-topic{font-family:var(--serif);font-weight:800;font-size:16px;margin:4px 0 2px;color:var(--ink)}
+.side-topic-desc{font-size:12px;color:var(--ink2);margin-bottom:12px;line-height:1.65}
 .side-title{font-size:12px;letter-spacing:.12em;color:var(--ink2);margin:18px 0 10px;font-weight:600}
 .side-nav{list-style:none;border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}
 .side-nav li{border-bottom:1px solid var(--line)}
@@ -56,15 +64,14 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
 .distrip{display:flex;height:8px;border-radius:4px;overflow:hidden;margin-top:18px;max-width:640px}
 .distrip i{display:block;height:100%}
 /* ===== 章节 ===== */
-section.cat{margin-top:40px;scroll-margin-top:84px}
+section.cat{margin-top:40px;scroll-margin-top:140px}
 .cat-head{display:flex;align-items:baseline;gap:14px;border-bottom:2px solid var(--ink);padding-bottom:8px}
 .cat-no{font-family:var(--serif);font-size:15px;font-weight:800;color:#fff;background:var(--ink);border-radius:6px;padding:2px 8px;transform:translateY(2px)}
 .cat-head h2{font-family:var(--serif);font-size:24px;font-weight:800}
 .cat-head .cn{font-size:13px;color:var(--ink2);font-weight:400}
-.cat-desc{color:var(--ink2);font-size:13px;margin-top:8px}
 .cat-count{font-size:12px;color:var(--ink2);margin-left:auto;white-space:nowrap}
 /* ===== 条目 ===== */
-.entry{position:relative;padding:16px 0 16px 18px;border-bottom:1px solid var(--line);scroll-margin-top:84px}
+.entry{position:relative;padding:16px 0 16px 18px;border-bottom:1px solid var(--line);scroll-margin-top:140px}
 .entry::before{content:'';position:absolute;left:0;top:18px;bottom:18px;width:3px;border-radius:2px;background:var(--ec)}
 .entry.hide{display:none}
 .entry:hover{background:rgba(255,255,255,.6)}
@@ -73,7 +80,6 @@ section.cat{margin-top:40px;scroll-margin-top:84px}
 .e-chip{color:#fff;font-size:11px;padding:1px 8px;border-radius:999px;background:var(--ec);white-space:nowrap}
 .e-dup{background:var(--paper2);border-radius:999px;padding:1px 8px;white-space:nowrap}
 .e-q{font-size:15.5px;font-weight:700;line-height:1.65;margin-bottom:8px}
-.e-q .tag{display:inline-block;font-size:11px;font-weight:400;color:var(--ec);border:1px solid var(--ec);border-radius:4px;padding:0 5px;margin-right:6px;transform:translateY(-1px)}
 .e-a{font-size:14px;color:#333A46;line-height:1.8;overflow-wrap:break-word}
 .e-a h3{font-size:13.5px;margin:12px 0 4px;color:var(--ink);font-weight:700}
 .e-a h2{font-size:14.5px;margin:12px 0 4px;color:var(--ink);font-weight:700}
@@ -90,21 +96,16 @@ section.cat{margin-top:40px;scroll-margin-top:84px}
 .e-more.on{display:block}
 .btn-more{cursor:pointer;margin-top:8px;border:none;background:none;color:var(--accent);font-size:13px;font-family:var(--sans);padding:0}
 .btn-more:hover{text-decoration:underline}
-/* 搜索高亮 */
 mark{background:#FDE68A;color:inherit;border-radius:2px;padding:0 1px}
-/* 空态 */
 .empty{display:none;text-align:center;color:var(--ink2);padding:60px 0;font-size:14px}
 .empty.show{display:block}
-/* 返回顶部 */
 .totop{position:fixed;right:26px;bottom:26px;width:44px;height:44px;border-radius:50%;background:var(--ink);color:#fff;border:none;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.18);z-index:60}
 .totop.show{display:flex}
-/* 条目操作：修改/删除 */
 .e-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
 .e-btn{cursor:pointer;display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:#fff;color:var(--ink2);border-radius:8px;padding:5px 11px;font-size:12.5px;font-family:var(--sans);line-height:1}
 .e-btn svg{width:13px;height:13px;flex:none}
 .e-btn:hover{border-color:var(--accent);color:var(--accent)}
 .e-btn.del:hover{border-color:#DC2626;color:#DC2626}
-/* 编辑表单 */
 .e-edit{margin-top:10px;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--paper2)}
 .ee-field{margin-bottom:10px}
 .ee-field label{display:block;font-size:12px;color:var(--ink2);margin-bottom:4px}
@@ -114,11 +115,9 @@ mark{background:#FDE68A;color:inherit;border-radius:2px;padding:0 1px}
 .e-edit-actions{display:flex;gap:8px;justify-content:flex-end}
 .e-edit-actions .save{background:var(--accent);border-color:var(--accent);color:#fff}
 .e-edit-actions .save:hover{opacity:.88;color:#fff;background:var(--accent)}
-/* 侧栏工具 */
 .side-tools{margin-top:12px}
 .side-tools button{width:100%;cursor:pointer;border:1px solid var(--line);background:var(--paper2);color:var(--ink2);border-radius:8px;padding:7px 10px;font-size:12.5px;font-family:var(--sans)}
 .side-tools button:hover{border-color:var(--accent);color:var(--accent)}
-/* ===== 云端版：加载 / 登录 / 编辑权限 ===== */
 .loading{text-align:center;color:var(--ink2);padding:50px 0;font-size:14px}
 .e-actions .e-btn{display:none}
 body.is-admin .e-actions .e-btn{display:inline-flex}
@@ -137,7 +136,6 @@ body.is-admin .e-actions .e-btn{display:inline-flex}
 .m-actions button:hover{border-color:var(--accent);color:var(--accent)}
 .m-actions #mLogin{background:var(--accent);border-color:var(--accent);color:#fff}
 .m-actions #mLogin:hover{opacity:.88;color:#fff}
-/* ===== 图片：展示 / 上传 / 放大 ===== */
 .e-images{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .e-images img{width:128px;height:128px;object-fit:cover;border-radius:8px;border:1px solid var(--line);cursor:zoom-in;background:#fff}
 .ee-imgs{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
@@ -150,13 +148,11 @@ body.is-admin .e-actions .e-btn{display:inline-flex}
 .ee-upload-row .ee-upload:hover{background:#EFF4FF}
 .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:90;display:flex;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
 .lightbox img{max-width:92%;max-height:92%;border-radius:8px;box-shadow:0 12px 40px rgba(0,0,0,.5)}
-/* 移动端 */
-
-.menu-btn{display:none}
 @media(max-width:960px){
   .layout{grid-template-columns:1fr;padding:16px 14px 60px}
-  .sidebar{position:static;height:auto;max-height:340px;margin-bottom:8px}
-  .topbar-in{padding:10px 14px}
+  .sidebar{position:static;top:auto;height:auto;max-height:340px;margin-bottom:8px}
+  .topbar-in{padding:10px 14px 0}
+  .topicbar{padding:8px 14px 10px}
   .hero h1{font-size:26px}
   .cat-head h2{font-size:20px}
 }
@@ -176,7 +172,7 @@ body.is-admin .e-actions .e-btn{display:inline-flex}
 
 <header class="topbar">
   <div class="topbar-in">
-    <div class="brand"><span class="logo">E</span>英语学习手册</div>
+    <div class="brand"><span class="logo" id="brandLogo">E</span><b id="brandName">英语学习手册</b></div>
     <div class="searchbox">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="q" type="text" placeholder="搜索单词、句子、主题…" autocomplete="off">
@@ -188,18 +184,19 @@ body.is-admin .e-actions .e-btn{display:inline-flex}
     </div>
     <span class="search-stat" id="searchStat"></span>
   </div>
+  <nav class="topicbar" id="topicbar"></nav>
 </header>
 
 <div class="layout">
   <aside class="sidebar" id="sidebar"></aside>
   <main>
     <div class="hero">
-      <h1>英语学习手册</h1>
-      <p class="sub">从 2024-07 至 2026-09 与豆包的两年对话中，筛选出全部英语学习相关问答，去掉寒暄与重复，按主题整理成精炼笔记。带 ▾ 的长答案可展开看全文。</p>
+      <h1 id="heroTitle">英语学习手册</h1>
+      <p class="sub" id="heroSub">从两年对话中筛选的英语学习问答，按主题整理成精炼笔记。</p>
       <div class="hero-stats">
         <div class="hstat"><div class="num" id="statTotal">1226</div><div class="lb">精炼问答</div></div>
-        <div class="hstat"><div class="num">8</div><div class="lb">主题分类</div></div>
-        <div class="hstat"><div class="num">2024-07-31 ~ 2026-09-07</div><div class="lb">对话覆盖区间</div></div>
+        <div class="hstat"><div class="num" id="statCats">8</div><div class="lb">子分类</div></div>
+        <div class="hstat"><div class="num" id="statSpan">"2024-07-31 ~ 2026-09-07"</div><div class="lb">对话覆盖区间</div></div>
       </div>
       <div class="distrip" id="distrip"></div>
     </div>
@@ -230,38 +227,31 @@ body.is-admin .e-actions .e-btn{display:inline-flex}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* ===== 主题数据 ===== */
-const CATS = [{"id": "sentence", "name": "句子翻译", "desc": "日常句子、对话的中英对照与翻译（含听译练习）", "color": "#2563EB"}, {"id": "words", "name": "单词与表达", "desc": "单词含义、一词多义、俚语、短语、缩写", "color": "#0E9F6E"}, {"id": "grammar", "name": "语法", "desc": "时态、从句、单复数、词序、句子纠错", "color": "#D97706"}, {"id": "method", "name": "学习方法", "desc": "听力、背单词、口语练习、出国工作英语", "color": "#7C3AED"}, {"id": "speaking", "name": "口语场景", "desc": "打招呼、点餐、问路、职场沟通等场景表达", "color": "#DB2777"}, {"id": "culture", "name": "语言文化", "desc": "英语由来、美式英式、中英差异、语言习惯", "color": "#0891B2"}, {"id": "exam", "name": "考试水平", "desc": "四六级、雅思、CEFR 等考试与等级", "color": "#4D7C0F"}, {"id": "other", "name": "英语杂谈", "desc": "其他与英语相关的问答", "color": "#64748B"}];
+/* ===== 主题与云端接入 ===== */
+const TOPICS = [{"id": "english", "name": "英语学习", "logo": "E", "title": "英语学习手册", "accent": "#1E4FD8", "sub": "从两年对话中筛选的英语学习问答：单词、语法、口语、翻译，去掉寒暄与重复，按主题整理成精炼笔记。带 ▾ 的长答案可展开看全文。", "placeholder": "搜索单词、句子、主题…"}, {"id": "tech", "name": "电脑数码", "logo": "T", "title": "电脑数码手册", "accent": "#0D9488", "sub": "电脑、手机、网络、软件、智能家电与数码设备相关的问答笔记。", "placeholder": "搜索设备、软件、故障…"}, {"id": "work", "name": "工作商务", "logo": "W", "title": "工作商务手册", "accent": "#6D28D9", "sub": "职场沟通、项目管理、合同邮件、海外工作与商务协作相关问答。", "placeholder": "搜索会议、合同、出差…"}, {"id": "car", "name": "车辆汽车", "logo": "C", "title": "车辆汽车手册", "accent": "#C2410C", "sub": "购车选车、保养维修、自驾出行等车辆相关问答。", "placeholder": "搜索车型、保养、故障…"}, {"id": "health", "name": "健康医疗", "logo": "H", "title": "健康医疗手册", "accent": "#059669", "sub": "日常健康、就医体检、用药与运动健身相关问答。", "placeholder": "搜索症状、用药、检查…"}, {"id": "pet", "name": "养龟宠物", "logo": "P", "title": "养龟宠物手册", "accent": "#92400E", "sub": "养龟、猫狗、水族与其他宠物的饲养护理问答。", "placeholder": "搜索龟、猫、狗、饲养…"}, {"id": "life", "name": "生活家居", "logo": "L", "title": "生活家居手册", "accent": "#BE185D", "sub": "家居家电、清洁维修、做饭收纳等日常生活问答。", "placeholder": "搜索家电、维修、菜谱…"}, {"id": "arts", "name": "影视文艺", "logo": "A", "title": "影视文艺手册", "accent": "#4F46E5", "sub": "电影、电视剧、音乐、书籍等文艺作品赏析相关问答。", "placeholder": "搜索电影、音乐、书籍…"}];
+const TOPICMAP = {};
+TOPICS.forEach(t=>TOPICMAP[t.id]=t);
+const FALLBACK_CATS = [{"id": "sentence", "name": "句子翻译", "desc": "日常句子、对话的中英对照与翻译（含听译练习）", "color": "#2563EB"}, {"id": "words", "name": "单词与表达", "desc": "单词含义、一词多义、俚语、短语、缩写", "color": "#0E9F6E"}, {"id": "grammar", "name": "语法", "desc": "时态、从句、单复数、词序、句子纠错", "color": "#D97706"}, {"id": "method", "name": "学习方法", "desc": "听力、背单词、口语练习、出国工作英语", "color": "#7C3AED"}, {"id": "speaking", "name": "口语场景", "desc": "打招呼、点餐、问路、职场沟通等场景表达", "color": "#DB2777"}, {"id": "culture", "name": "语言文化", "desc": "英语由来、美式英式、中英差异、语言习惯", "color": "#0891B2"}, {"id": "exam", "name": "考试水平", "desc": "四六级、雅思、CEFR 等考试与等级", "color": "#4D7C0F"}, {"id": "other", "name": "英语杂谈", "desc": "其他与英语相关的问答", "color": "#64748B"}];
+const FALLBACK_ORDER = ["sentence", "words", "grammar", "method", "speaking", "culture", "exam", "other"];
 const DATA = [];
-const ORDER = ["sentence", "words", "grammar", "method", "speaking", "culture", "exam", "other"];
 const SPAN = "2024-07-31 ~ 2026-09-07";
 const TOTAL = 1226;
-/* ===== 渲染逻辑 ===== */
-let CATMAP = {};
-CATS.forEach(c=>CATMAP[c.id]=c);
-async function loadCategories(){
-  try{
-    const {data, error} = await sb.from('categories').select('id,name,color,sort').order('sort');
-    if(!error && data && data.length){
-      const m = {};
-      data.forEach(c=>{ m[c.id] = {name: c.name, color: c.color}; });
-      CATMAP = m;
-    }
-  }catch(e){ /* 云端分类加载失败时回退内置分类 */ }
-}
 
-/* ===== 云端（Supabase）接入：数据、登录、实时同步 ===== */
 const SUPABASE_URL = 'https://cecjcbvxgojpuynirtbq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNlY2pjYnZ4Z29qcHV5bmlydGJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkyMzE5OTYsImV4cCI6MjEwNDgwNzk5Nn0.tFmY5dz4iwRr-P2GKfUT5HgEUMtWiMnndO5Jir0JOoE';
 const ADMIN_EMAIL = 'shicai17@gmail.com';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let authUser = null;
 
+let currentTopic = 'english';
 let currentQuery = '';
-let byCat = {};
+let CATMAP = {};          // cat id -> {name,color,topic,sort,description}
+let CATS_BY_TOPIC = {english: FALLBACK_CATS.slice()};  // topic -> [cat]
+let notesByTopic = {};    // topic -> [有效笔记]
+let byCat = {};           // 当前主题 cat -> [笔记]
 
 function esc(s){
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 function mdRender(t){
   t = esc(t);
@@ -293,29 +283,30 @@ function truncHTML(t){
   return mdRender(s) + '<p>……</p>';
 }
 
-/* ===== 数据访问：云端数据（含软删标记），渲染时过滤 ===== */
-function getById(id){
-  return DATA[id] || null;
-}
-function getEffective(){
-  const arr = [];
-  DATA.forEach((it, i)=>{
-    if(it.__deleted) return;
-    const o = Object.assign({}, it);
-    o.__id = i;
-    arr.push(o);
-  });
-  return arr;
-}
+/* ===== 数据访问 ===== */
+function getById(id){ return DATA[id] || null; }
+function deletedCount(){ return DATA.filter(it=>it.__deleted).length; }
 function rebuildByCat(){
+  notesByTopic = {};
+  TOPICS.forEach(t=>{ notesByTopic[t.id] = []; });
+  DATA.forEach((it,i)=>{
+    if(it.__deleted) return;
+    const tp = it.topic || 'english';
+    const o = Object.assign({}, it); o.__id = i;
+    (notesByTopic[tp] = notesByTopic[tp] || []).push(o);
+  });
+  TOPICS.forEach(t=>{
+    (notesByTopic[t.id]||[]).sort((a,b)=> a.date<b.date?-1 : a.date>b.date?1:0);
+  });
   byCat = {};
-  getEffective().forEach(it=>{ (byCat[it.cat] = byCat[it.cat] || []).push(it); });
-  ORDER.forEach(id=>{ if(byCat[id]) byCat[id].sort((a,b)=> a.date<b.date ? -1 : a.date>b.date ? 1 : 0); });
+  (notesByTopic[currentTopic]||[]).forEach(it=>{ (byCat[it.cat]=byCat[it.cat]||[]).push(it); });
+  const cats = CATS_BY_TOPIC[currentTopic] || [];
+  cats.forEach(c=>{ if(byCat[c.id]) byCat[c.id].sort((a,b)=> a.date<b.date?-1:a.date>b.date?1:0); });
 }
 
 /* ===== 条目渲染 ===== */
 function entryHTML(it, ec, id){
-  let h = '<div class="e-meta"><span class="e-date">'+it.date+'</span><span class="e-chip">'+CATMAP[it.cat].name+'</span>';
+  let h = '<div class="e-meta"><span class="e-date">'+it.date+'</span><span class="e-chip">'+(CATMAP[it.cat]?CATMAP[it.cat].name:esc(it.cat))+'</span>';
   if(it.dup && it.dup.length){ h += '<span class="e-dup">同题重问 '+(it.dup.length+1)+' 次（'+it.dup[0]+'～'+it.dup[it.dup.length-1]+'）</span>'; }
   h += '</div>';
   h += '<div class="e-q">'+esc(it.q)+'</div>';
@@ -337,8 +328,7 @@ function entryHTML(it, ec, id){
   return '<article class="entry" data-cat="'+it.cat+'" data-id="'+id+'" style="--ec:'+ec+'">'+h+'</article>';
 }
 
-/* ===== 修改 ===== */
-/* ===== 修改（含图片上传） ===== */
+/* ===== 图片：上传 / 预览 / 移除 ===== */
 let pendingImgs = [];
 function imgPathFromUrl(u){
   const i = u.indexOf('/object/public/note-images/');
@@ -352,16 +342,10 @@ function renderImgList(id, listEl){
     w.className = 'ee-img';
     w.innerHTML = '<img src="'+esc(img.url)+'" alt="图片预览">';
     const del = document.createElement('button');
-    del.type = 'button';
-    del.className = 'ee-img-del';
-    del.title = '移除这张图';
-    del.setAttribute('aria-label', '移除');
+    del.type = 'button'; del.className = 'ee-img-del'; del.title = '移除这张图'; del.setAttribute('aria-label','移除');
     del.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
     del.addEventListener('click', ()=>{
-      if(img.isNew){
-        const p = imgPathFromUrl(img.url);
-        if(p) sb.storage.from('note-images').remove([p]);
-      }
+      if(img.isNew){ const p = imgPathFromUrl(img.url); if(p) sb.storage.from('note-images').remove([p]); }
       pendingImgs.splice(idx, 1);
       renderImgList(id, listEl);
     });
@@ -394,13 +378,17 @@ function enterEdit(id, el){
   if(!qEl || !bodyEl || !actEl || actEl.dataset.editing) return;
   actEl.dataset.editing = '1';
   pendingImgs = (it.images || []).map(u=>({url: u, isNew: false}));
-  const catOpts = Object.keys(CATMAP).map(cid=>'<option value="'+esc(cid)+'"'+(it.cat===cid?' selected':'')+'>'+esc(CATMAP[cid].name)+'</option>').join('');
+  const noteTopic = it.topic || 'english';
+  const topicCats = (CATS_BY_TOPIC[noteTopic] && CATS_BY_TOPIC[noteTopic].length)
+    ? CATS_BY_TOPIC[noteTopic]
+    : Object.keys(CATMAP).map(k=>CATMAP[k]);
+  const catOpts = topicCats.map(c=>'<option value="'+esc(c.id)+'"'+(it.cat===c.id?' selected':'')+'>'+esc(c.name)+'</option>').join('');
   const box = document.createElement('div');
   box.className = 'e-edit';
   box.innerHTML =
     '<div class="ee-field"><label for="edq-'+id+'">提问</label><input id="edq-'+id+'" type="text" value="'+esc(it.q)+'"></div>'
     + '<div class="ee-field"><label for="edb-'+id+'">答案（Markdown 原文，支持 **加粗**、### 小标题、- 列表）</label><textarea id="edb-'+id+'">'+esc(it.body)+'</textarea></div>'
-    + '<div class="ee-field"><label for="edc-'+id+'">分类</label><select id="edc-'+id+'">'+catOpts+'</select></div>'
+    + '<div class="ee-field"><label for="edc-'+id+'">分类（当前主题：'+esc(TOPICMAP[noteTopic]?TOPICMAP[noteTopic].name:noteTopic)+'）</label><select id="edc-'+id+'">'+catOpts+'</select></div>'
     + '<div class="ee-field"><label>图片（可选，jpg/png/webp/gif，单张 ≤5MB）</label>'
     + '<div class="ee-imgs" id="eeImgs-'+id+'"></div>'
     + '<div class="ee-upload-row"><input type="file" id="eeFile-'+id+'" class="ee-file" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden>'
@@ -441,15 +429,7 @@ async function doSave(id){
   if(error){ alert('保存失败：' + error.message); return; }
   DATA[id].q = q; DATA[id].body = body; DATA[id].cat = cat; DATA[id].images = newUrls;
   pendingImgs = [];
-  const it = getById(id);
-  const wrap = document.createElement('div');
-  wrap.innerHTML = entryHTML(it, CATMAP[it.cat].color, id).trim();
-  const ne = wrap.firstChild;
-  el.replaceWith(ne);
-  rebuildByCat();
-  refreshStats();
-  collectEntries();
-  applyFilter(currentQuery);
+  renderAll();
 }
 function cancelEdit(id){
   const el = document.querySelector('.entry[data-id="'+id+'"]');
@@ -457,12 +437,7 @@ function cancelEdit(id){
   const box = el.querySelector('.e-edit');
   if(box) box.remove();
   if(pendingImgs.length){
-    pendingImgs.forEach(img=>{
-      if(img.isNew){
-        const p = imgPathFromUrl(img.url);
-        if(p) sb.storage.from('note-images').remove([p]);
-      }
-    });
+    pendingImgs.forEach(img=>{ if(img.isNew){ const p = imgPathFromUrl(img.url); if(p) sb.storage.from('note-images').remove([p]); } });
     pendingImgs = [];
   }
   const qEl = el.querySelector('.e-q'), bodyEl = el.querySelector('.e-a'), actEl = el.querySelector('.e-actions');
@@ -494,12 +469,11 @@ async function restoreDeleted(){
   renderAll();
 }
 function exportData(){
-  const eff = getEffective();
-  const data = eff.map(it=>({date: it.date, cat: it.cat, q: it.q, body: it.body, fups: it.fups||[], dup: it.dup||[]}));
-  const blob = new Blob([JSON.stringify(data, null, 1)], {type: 'application/json'});
+  const eff = (notesByTopic[currentTopic]||[]).map(it=>({topic: currentTopic, date: it.date, cat: it.cat, q: it.q, body: it.body, fups: it.fups||[], dup: it.dup||[]}));
+  const blob = new Blob([JSON.stringify(eff, null, 1)], {type: 'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'english-notes-edited.json';
+  a.download = currentTopic + '-notes.json';
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -507,6 +481,23 @@ function exportData(){
 }
 
 /* ===== 云端数据加载与实时同步 ===== */
+async function loadCategories(){
+  try{
+    const {data, error} = await sb.from('categories').select('id,name,color,sort,description,topic').order('sort');
+    if(!error && data && data.length){
+      CATMAP = {}; CATS_BY_TOPIC = {};
+      data.forEach(c=>{
+        const tp = c.topic || 'english';
+        CATMAP[c.id] = {id: c.id, name: c.name, color: c.color, topic: tp, sort: c.sort, description: c.description||''};
+        (CATS_BY_TOPIC[tp] = CATS_BY_TOPIC[tp] || []).push(CATMAP[c.id]);
+      });
+      TOPICS.forEach(t=>{
+        CATS_BY_TOPIC[t.id] = CATS_BY_TOPIC[t.id] || [];
+        CATS_BY_TOPIC[t.id].sort((a,b)=> (a.sort==null?99:a.sort) - (b.sort==null?99:b.sort));
+      });
+    }
+  }catch(e){ /* 回退内置分类 */ }
+}
 async function loadNotes(){
   await loadCategories();
   const box = document.getElementById('loading');
@@ -524,7 +515,7 @@ async function loadNotes(){
   }
   DATA.length = 0;
   all.forEach(r=>{
-    const o = {date: r.date||'', q: r.q, body: r.body, cat: r.cat, fups: r.fups||[], dup: r.dup||[], images: r.images||[]};
+    const o = {date: r.date||'', q: r.q, body: r.body, cat: r.cat, fups: r.fups||[], dup: r.dup||[], images: r.images||[], topic: r.topic||'english'};
     o.__dbid = r.id;
     o.__deleted = !!r.deleted;
     DATA.push(o);
@@ -534,10 +525,7 @@ async function loadNotes(){
   updateAuthUI();
 }
 let reloadTimer = null;
-function scheduleReload(){
-  clearTimeout(reloadTimer);
-  reloadTimer = setTimeout(loadNotes, 400);
-}
+function scheduleReload(){ clearTimeout(reloadTimer); reloadTimer = setTimeout(loadNotes, 400); }
 const ch = sb.channel('notes-changes')
   .on('postgres_changes', {event: '*', schema: 'public', table: 'notes'}, scheduleReload)
   .subscribe();
@@ -545,21 +533,10 @@ const chCat = sb.channel('cat-changes')
   .on('postgres_changes', {event: '*', schema: 'public', table: 'categories'}, ()=>{ loadCategories().then(renderAll); })
   .subscribe();
 
-/* ===== 管理员登录（RLS 兜底：仅 ADMIN_EMAIL 可写） ===== */
-function isAdmin(){
-  return !!(authUser && authUser.email === ADMIN_EMAIL);
-}
-function deletedCount(){
-  return DATA.filter(it=>it.__deleted).length;
-}
-function openAuthModal(){
-  document.getElementById('authModal').hidden = false;
-  document.getElementById('mMsg').textContent = '';
-  document.getElementById('mEmail').focus();
-}
-function closeAuthModal(){
-  document.getElementById('authModal').hidden = true;
-}
+/* ===== 管理员登录 ===== */
+function isAdmin(){ return !!(authUser && authUser.email === ADMIN_EMAIL); }
+function openAuthModal(){ document.getElementById('authModal').hidden = false; document.getElementById('mMsg').textContent=''; document.getElementById('mEmail').focus(); }
+function closeAuthModal(){ document.getElementById('authModal').hidden = true; }
 async function submitAuth(mode){
   const email = document.getElementById('mEmail').value.trim();
   const pw = document.getElementById('mPw').value;
@@ -578,10 +555,7 @@ async function submitAuth(mode){
     else { msg.textContent = '注册成功，请到邮箱点击确认链接后重新登录。'; }
   }
 }
-async function logout(){
-  await sb.auth.signOut();
-  updateAuthUI();
-}
+async function logout(){ await sb.auth.signOut(); updateAuthUI(); }
 function updateAuthUI(){
   const btn = document.getElementById('loginBtn');
   const admin = isAdmin();
@@ -599,69 +573,100 @@ function updateAuthUI(){
     else rb.style.display = 'none';
   }
 }
-sb.auth.onAuthStateChange((event, session)=>{
-  authUser = session ? session.user : null;
-  updateAuthUI();
-});
+sb.auth.onAuthStateChange((event, session)=>{ authUser = session ? session.user : null; updateAuthUI(); });
 
-/* ===== 渲染 ===== */
+/* ===== 主题切换与渲染 ===== */
+function renderTopicBar(){
+  document.getElementById('topicbar').innerHTML = TOPICS.map(t=>
+    '<button type="button" class="topic'+(t.id===currentTopic?' on':'')+'" data-topic="'+t.id+'">'+t.logo+' '+esc(t.name)+'</button>'
+  ).join('');
+}
+function updateTopicUI(){
+  const tp = TOPICMAP[currentTopic] || TOPICS[0];
+  document.documentElement.style.setProperty('--accent', tp.accent);
+  document.getElementById('brandLogo').textContent = tp.logo;
+  document.getElementById('brandName').textContent = tp.title;
+  document.getElementById('heroTitle').textContent = tp.title;
+  document.getElementById('heroSub').textContent = tp.sub;
+  document.getElementById('q').placeholder = tp.placeholder;
+  document.title = tp.title + ' · 多主题知识库';
+}
 function buildSidebar(){
-  let h = '<div class="side-title">主题目录</div><ul class="side-nav">';
-  ORDER.forEach((id)=>{
-    const c = CATMAP[id]; const n = (byCat[id]||[]).length;
-    h += '<li><a href="#cat-'+id+'"><span class="dot" style="background:'+c.color+'"></span>'+c.name+'<span class="cnt">'+n+'</span></a></li>';
+  const cats = CATS_BY_TOPIC[currentTopic] || [];
+  const tp = TOPICMAP[currentTopic] || TOPICS[0];
+  let h = '<div class="side-topic">'+tp.logo+' '+esc(tp.name)+'</div>';
+  h += '<div class="side-topic-desc">'+esc(tp.sub)+'</div>';
+  h += '<div class="side-title">分类目录</div><ul class="side-nav">';
+  cats.forEach(c=>{
+    const n = (byCat[c.id]||[]).length;
+    h += '<li><a href="#cat-'+c.id+'"><span class="dot" style="background:'+c.color+'"></span>'+esc(c.name)+'<span class="cnt">'+n+'</span></a></li>';
   });
   h += '</ul>';
-  const eff = getEffective();
-  h += '<div class="side-foot">覆盖 '+SPAN+'<br>共 <b id="sideTotal">'+eff.length+'</b> 条精炼问答</div>';
+  const eff = notesByTopic[currentTopic]||[];
+  h += '<div class="side-foot">共 <b id="sideTotal">'+eff.length+'</b> 条问答</div>';
   h += '<div class="side-tools"><div class="auth-tip" id="authTip"></div></div>';
   if(isAdmin() && deletedCount() > 0){
     h += '<div class="side-tools"><button type="button" id="restoreBtn">已删 '+deletedCount()+' 条 · 恢复</button></div>';
   }
-  h += '<div class="side-tools"><button type="button" id="exportBtn">导出当前数据(JSON)</button></div>';
+  h += '<div class="side-tools"><button type="button" id="exportBtn">导出当前主题数据(JSON)</button></div>';
   document.getElementById('sidebar').innerHTML = h;
   const rb = document.getElementById('restoreBtn');
   if(rb) rb.addEventListener('click', restoreDeleted);
   document.getElementById('exportBtn').addEventListener('click', exportData);
 }
 function buildMain(){
+  const cats = CATS_BY_TOPIC[currentTopic] || [];
   let h = '';
-  ORDER.forEach((id, i)=>{
-    const c = CATMAP[id]; const items = byCat[id]||[];
-    h += '<section class="cat" id="cat-'+id+'"><div class="cat-head"><span class="cat-no">'+String(i+1).padStart(2,'0')+'</span><h2>'+c.name+'</h2><span class="cn">'+c.desc+'</span><span class="cat-count">'+items.length+' 条</span></div>';
+  cats.forEach((c, i)=>{
+    const items = byCat[c.id]||[];
+    h += '<section class="cat" id="cat-'+c.id+'"><div class="cat-head"><span class="cat-no">'+String(i+1).padStart(2,'0')+'</span><h2>'+esc(c.name)+'</h2><span class="cn">'+esc(c.description||'')+'</span><span class="cat-count">'+items.length+' 条</span></div>';
     items.forEach(it=>{ h += entryHTML(it, c.color, it.__id); });
     h += '</section>';
   });
   document.getElementById('main').innerHTML = h;
 }
 function refreshStats(){
-  const eff = getEffective();
-  const t = document.getElementById('statTotal');
-  if(t) t.textContent = eff.length;
-  const st = document.getElementById('sideTotal');
-  if(st) st.textContent = eff.length;
+  const eff = notesByTopic[currentTopic]||[];
+  const cats = CATS_BY_TOPIC[currentTopic]||[];
+  const t = document.getElementById('statTotal'); if(t) t.textContent = eff.length;
+  const st = document.getElementById('sideTotal'); if(st) st.textContent = eff.length;
+  const sc = document.getElementById('statCats'); if(sc) sc.textContent = cats.length;
+  const dates = eff.map(x=>x.date).filter(Boolean).sort();
+  const sp = document.getElementById('statSpan');
+  if(sp) sp.textContent = dates.length ? (dates[0]+' ~ '+dates[dates.length-1]) : '—';
   const distrip = document.getElementById('distrip');
   const total = eff.length || 1;
   let dh = '';
-  ORDER.forEach(id=>{
-    const n = (byCat[id]||[]).length;
-    if(n) dh += '<i style="width:'+(n/total*100).toFixed(2)+'%;background:'+CATMAP[id].color+'" title="'+CATMAP[id].name+' '+n+'"></i>';
+  cats.forEach(c=>{
+    const n = (byCat[c.id]||[]).length;
+    if(n) dh += '<i style="width:'+(n/total*100).toFixed(2)+'%;background:'+c.color+'" title="'+esc(c.name)+' '+n+'"></i>';
   });
   distrip.innerHTML = dh;
 }
 function renderAll(){
   rebuildByCat();
+  renderTopicBar();
+  updateTopicUI();
   buildSidebar();
   buildMain();
   refreshStats();
   collectEntries();
   applyFilter(currentQuery);
 }
+function switchTopic(t){
+  if(!TOPICMAP[t]) return;
+  if(t === currentTopic) return;
+  currentTopic = t;
+  currentQuery = '';
+  const qs = document.getElementById('q'); if(qs) qs.value = '';
+  renderAll();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
 
 /* ===== 搜索与折叠 ===== */
 let allEntries = [];
 function collectEntries(){
-  allEntries = Array.from(document.querySelectorAll('.entry'));
+  allEntries = Array.from(document.querySelectorAll('#main .entry'));
   allEntries.forEach(el=>{
     el.__it = {cat: el.dataset.cat, q: el.querySelector('.e-q').textContent, body: el.querySelector('.e-a').textContent, fups: []};
   });
@@ -682,7 +687,7 @@ function applyFilter(q){
     if(ok && q) highlight(el, q);
   });
   document.getElementById('searchStat').textContent = q ? ('匹配 ' + shown + ' 条') : ('共 ' + allEntries.length + ' 条');
-  document.getElementById('empty').classList.toggle('show', shown===0);
+  document.getElementById('empty').classList.toggle('show', shown===0 && allEntries.length>0);
 }
 function highlight(el, q){
   const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {acceptNode(n){ return n.parentNode.tagName==='MARK' ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; }});
@@ -746,6 +751,10 @@ function onMainClick(e){
 }
 window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('main').addEventListener('click', onMainClick);
+  document.getElementById('topicbar').addEventListener('click', e=>{
+    const b = e.target.closest('.topic');
+    if(b) switchTopic(b.dataset.topic);
+  });
   document.getElementById('q').addEventListener('input', e=>{ currentQuery = e.target.value; applyFilter(currentQuery); });
   document.getElementById('openAll').addEventListener('click', ()=> toggleAll(true));
   document.getElementById('closeAll').addEventListener('click', ()=> toggleAll(false));
