@@ -613,6 +613,7 @@ sb.auth.onAuthStateChange((event, session)=>{
   authUser = session ? session.user : null;
   document.body.classList.toggle('logged-in', !!authUser);
   updateAuthUI();
+  if(authUser && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')){ loadNotes(); }
 });
 sb.auth.getSession().then(({data})=>{
   authUser = data.session ? data.session.user : null;
