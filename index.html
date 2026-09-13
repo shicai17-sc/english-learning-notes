@@ -257,6 +257,13 @@ let byCat = {};           // 当前主题 cat -> [笔记]
 function esc(s){
   return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+function inlineFormat(s){
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  return s;
+}
 function mdRender(t){
   t = esc(t);
   const lines = t.split('\n');
@@ -267,14 +274,14 @@ function mdRender(t){
     if(!s){ closeList(); continue; }
     let m = s.match(/^#{1,3}\s+(.*)$/);
     if(m){ closeList(); const lv = (s.match(/^#+/)||[''])[0].length; const tag = lv<=1?'h2':'h3';
-      html += '<'+tag+'>'+m[1]+'</'+tag+'>'; continue; }
+      html += '<'+tag+'>'+inlineFormat(m[1])+'</'+tag+'>'; continue; }
     m = s.match(/^[-*]\s+(.*)$/);
-    if(m){ if(list!=='ul'){ closeList(); html+='<ul>'; list='ul'; } html += '<li>'+m[1]+'</li>'; continue; }
+    if(m){ if(list!=='ul'){ closeList(); html+='<ul>'; list='ul'; } html += '<li>'+inlineFormat(m[1])+'</li>'; continue; }
     m = s.match(/^\d+[.、)]\s+(.*)$/);
-    if(m){ if(list!=='ol'){ closeList(); html+='<ol>'; list='ol'; } html += '<li>'+m[1]+'</li>'; continue; }
+    if(m){ if(list!=='ol'){ closeList(); html+='<ol>'; list='ol'; } html += '<li>'+inlineFormat(m[1])+'</li>'; continue; }
     m = s.match(/^>\s?(.*)$/);
-    if(m){ closeList(); html += '<blockquote>'+m[1]+'</blockquote>'; continue; }
-    closeList(); html += '<p>'+s+'</p>';
+    if(m){ closeList(); html += '<blockquote>'+inlineFormat(m[1])+'</blockquote>'; continue; }
+    closeList(); html += '<p>'+inlineFormat(s)+'</p>';
   }
   closeList();
   return html;
