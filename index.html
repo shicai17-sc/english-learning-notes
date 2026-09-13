@@ -165,10 +165,36 @@ body.is-admin .e-actions .e-btn{display:inline-flex}
   .hstat .lb{font-size:11px}
 }
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+.login-gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999}
+.login-gate .lg-box{width:340px;max-width:90vw;padding:32px 28px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.1)}
+.login-gate .lg-logo{font-size:28px;text-align:center;margin-bottom:4px}
+.login-gate h2{font-family:var(--serif);font-size:22px;font-weight:800;text-align:center;margin-bottom:6px}
+.login-gate .lg-sub{font-size:13px;color:var(--ink2);text-align:center;margin-bottom:22px;line-height:1.5}
+.login-gate input{width:100%;padding:11px 13px;margin-bottom:10px;border:1px solid var(--line);border-radius:9px;font-size:14px;box-sizing:border-box;background:var(--bg)}
+.login-gate input:focus{outline:none;border-color:var(--accent)}
+.login-gate .lg-msg{font-size:12px;color:var(--accent);min-height:18px;margin-bottom:8px;text-align:center}
+.login-gate .lg-btn{width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer}
+.login-gate .lg-btn:hover{opacity:.88}
+.login-gate .lg-foot{font-size:11px;color:var(--ink3);text-align:center;margin-top:16px}
+body.logged-in .login-gate{display:none}
+body:not(.logged-in) .topbar,body:not(.logged-in) .layout{display:none}
 
 </style>
 </head>
 <body>
+
+<div class="login-gate" id="loginGate">
+  <div class="lg-box">
+    <div class="lg-logo">📚</div>
+    <h2>多主题知识库</h2>
+    <div class="lg-sub">本网站需登录后查看内容<br>请输入已授权的邮箱和密码</div>
+    <input id="lgEmail" type="email" placeholder="邮箱" autocomplete="email">
+    <input id="lgPw" type="password" placeholder="密码" autocomplete="current-password">
+    <div class="lg-msg" id="lgMsg"></div>
+    <button class="lg-btn" id="lgLogin">登录</button>
+    <div class="lg-foot">没有账号？请联系管理员开通</div>
+  </div>
+</div>
 
 <header class="topbar">
   <div class="topbar-in">
@@ -583,7 +609,16 @@ function updateAuthUI(){
     else rb.style.display = 'none';
   }
 }
-sb.auth.onAuthStateChange((event, session)=>{ authUser = session ? session.user : null; updateAuthUI(); });
+sb.auth.onAuthStateChange((event, session)=>{
+  authUser = session ? session.user : null;
+  document.body.classList.toggle('logged-in', !!authUser);
+  updateAuthUI();
+});
+sb.auth.getSession().then(({data})=>{
+  authUser = data.session ? data.session.user : null;
+  document.body.classList.toggle('logged-in', !!authUser);
+  updateAuthUI();
+});
 
 /* ===== 主题切换与渲染 ===== */
 function renderTopicBar(){
@@ -782,11 +817,24 @@ window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('q').addEventListener('input', e=>{ currentQuery = e.target.value; applyFilter(currentQuery); });
   document.getElementById('openAll').addEventListener('click', ()=> toggleAll(true));
   document.getElementById('closeAll').addEventListener('click', ()=> toggleAll(false));
-  document.getElementById('loginBtn').addEventListener('click', ()=>{ if(isAdmin()) logout(); else openAuthModal(); });
+  document.getElementById('loginBtn').addEventListener('click', ()=>{ if(isAdmin()) logout(); });
   document.getElementById('mLogin').addEventListener('click', ()=> submitAuth('login'));
-  document.getElementById('mReg').addEventListener('click', ()=> submitAuth('signup'));
   document.getElementById('mClose').addEventListener('click', closeAuthModal);
   document.getElementById('authModal').addEventListener('click', e=>{ if(e.target.id === 'authModal') closeAuthModal(); });
+  // 全屏登录门
+  async function doGateLogin(){
+    const email = document.getElementById('lgEmail').value.trim();
+    const pw = document.getElementById('lgPw').value;
+    const msg = document.getElementById('lgMsg');
+    if(!email || !pw){ msg.textContent = '请填写邮箱和密码'; return; }
+    msg.textContent = '登录中…';
+    const {error} = await sb.auth.signInWithPassword({email, password: pw});
+    if(error){ msg.textContent = '登录失败：' + error.message; return; }
+    msg.textContent = '';
+  }
+  document.getElementById('lgLogin').addEventListener('click', doGateLogin);
+  document.getElementById('lgPw').addEventListener('keydown', e=>{ if(e.key==='Enter') doGateLogin(); });
+  document.getElementById('lgEmail').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('lgPw').focus(); });
   const totop = document.getElementById('totop');
   totop.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}));
   let _scrollTimer = null;
