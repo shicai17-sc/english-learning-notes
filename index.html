@@ -454,8 +454,7 @@ function cancelEdit(id){
 async function doDelete(id){
   if(!isAdmin()){ alert('请先以管理员身份登录后再删除'); return; }
   const it = getById(id);
-  const label = it ? it.q.slice(0, 40) : ('第 ' + (id+1) + ' 条');
-  if(!confirm('确定删除这条笔记？\n「'+label+'」\n\n删除后可在左侧「已删 N 条 · 恢复」中找回。')) return;
+  // 直接删除（软删，可在侧栏「已删 N 条 · 恢复」找回），无需确认
   const {error} = await sb.from('notes').update({deleted: true}).eq('id', DATA[id].__dbid);
   if(error){ alert('删除失败：' + error.message); return; }
   DATA[id].__deleted = true;
