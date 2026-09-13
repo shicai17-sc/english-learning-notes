@@ -111,6 +111,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,'PingFang SC','Micr
     <button class="tab on" data-tab="notes">笔记管理</button>
     <button class="tab" data-tab="cats">分类管理</button>
     <button class="tab" data-tab="stats">数据统计</button>
+    <button class="tab" data-tab="users">用户管理</button>
   </nav>
 
   <!-- 笔记管理 -->
@@ -151,6 +152,21 @@ body{margin:0;background:var(--bg);font-family:-apple-system,'PingFang SC','Micr
     <div style="margin-top:14px">
       <button class="btn" id="exportBtn">导出全部数据（JSON）</button>
     </div>
+  </section>
+
+  <!-- 用户管理 -->
+  <section class="panel" id="p-users">
+    <div class="card" style="margin-bottom:16px">
+      <h3 style="margin:0 0 10px">添加可登录用户</h3>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+        <div class="f" style="flex:1;min-width:200px;margin:0"><label>邮箱</label><input type="email" id="newUserEmail" placeholder="user@example.com"></div>
+        <div class="f" style="flex:1;min-width:160px;margin:0"><label>初始密码（至少6位）</label><input type="text" id="newUserPw" placeholder="设置初始密码"></div>
+        <button class="btn pri" id="addUserBtn">添加用户</button>
+      </div>
+      <p style="font-size:12px;color:var(--ink2);margin:8px 0 0">添加后该邮箱即可登录网站查看内容。用户首次登录后可自行修改密码。</p>
+    </div>
+    <h3 style="margin:0 0 10px">已授权用户（<span id="userCnt">0</span>）</h3>
+    <div id="userList"></div>
   </section>
 </div>
 
@@ -631,6 +647,71 @@ async function batchSetById(ids, deleted){
   await loadNotes();
 }
 
+/* ===== 用户管理 ===== */
+const EDGE_USERS = SUPABASE_URL + '/functions/v1/manage-users';
+async function getAuthToken(){
+  const { data: { session } } = await sb.auth.getSession();
+  return session ? session.access_token : null;
+}
+async function edgeCall(action, body){
+  const token = await getAuthToken();
+  if(!token){ toast('请先登录'); return null; }
+  const url = EDGE_USERS + '?action=' + action;
+  const opts = { headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' } };
+  if(body) opts.method = 'POST', opts.body = JSON.stringify(body);
+  const resp = await fetch(url, opts);
+  const data = await resp.json();
+  if(!resp.ok || data.error){ toast(data.error || '操作失败'); return null; }
+  return data;
+}
+async function loadUsers(){
+  const data = await edgeCall('list');
+  if(!data) return;
+  const users = data.users || [];
+  $('userCnt').textContent = users.length;
+  const list = $('userList');
+  if(!users.length){ list.innerHTML = '<p style="color:var(--ink2)">暂无用户</p>'; return; }
+  list.innerHTML = users.map(u=>{
+    const isAdmin = u.email === ADMIN_EMAIL;
+    const created = (u.created_at || '').slice(0,10);
+    return '<div class="note-item" style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line)">'
+      + '<div style="flex:1"><b>'+esc(u.email)+'</b>'
+      + (isAdmin ? ' <span style="color:var(--accent);font-size:12px">（管理员）</span>' : '')
+      + '<div style="font-size:12px;color:var(--ink2);margin-top:2px">创建于 '+created+'</div></div>'
+      + '<div style="display:flex;gap:6px">'
+      + '<button class="btn sm" data-act="resetpw" data-id="'+u.id+'" '+(isAdmin?'disabled style="opacity:.4;cursor:not-allowed"':'')+'>重置密码</button>'
+      + '<button class="btn sm" style="background:#e74c3c;border-color:#e74c3c;color:#fff" data-act="deluser" data-id="'+u.id+'" '+(isAdmin?'disabled style="opacity:.4;cursor:not-allowed;background:#e74c3c;border-color:#e74c3c;color:#fff"':'')+'>删除</button>'
+      + '</div></div>';
+  }).join('');
+}
+async function addUser(){
+  const email = $('newUserEmail').value.trim();
+  const pw = $('newUserPw').value;
+  if(!email || !pw){ toast('请填写邮箱和密码'); return; }
+  if(pw.length < 6){ toast('密码至少6位'); return; }
+  const data = await edgeCall('create', { email, password: pw });
+  if(data){ toast('用户添加成功：'+email); $('newUserEmail').value=''; $('newUserPw').value=''; loadUsers(); }
+}
+async function deleteUser(userId){
+  if(!confirm('确定删除这个用户？删除后该邮箱将无法登录。')) return;
+  const data = await edgeCall('delete', { userId });
+  if(data){ toast('用户已删除'); loadUsers(); }
+}
+async function resetUserPassword(userId){
+  const newPw = prompt('请输入新密码（至少6位）：');
+  if(!newPw || newPw.length < 6){ toast('密码至少6位'); return; }
+  const data = await edgeCall('reset-password', { userId, newPassword: newPw });
+  if(data){ toast('密码已重置'); }
+}
+$('addUserBtn').addEventListener('click', addUser);
+$('userList').addEventListener('click', e=>{
+  const btn = e.target.closest('button[data-act]');
+  if(!btn || btn.disabled) return;
+  const id = btn.dataset.id;
+  if(btn.dataset.act === 'deluser') deleteUser(id);
+  else if(btn.dataset.act === 'resetpw') resetUserPassword(id);
+});
+
 /* ===== 启动 ===== */
 async function boot(){
   await loadCategories();
@@ -640,6 +721,7 @@ async function boot(){
     $('loginBox').style.display = 'none';
     $('whoami').textContent = authUser.email + '（管理员）';
     $('logoutBtn').style.display = '';
+    loadUsers();
   }else{
     $('appBox').style.display = 'none';
     $('loginBox').style.display = 'block';
